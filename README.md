@@ -1,30 +1,14 @@
 # Fleet-Telemetry-Pipeline
 
-[![CI](https://github.com/vsingh2005/Fleet-Telemetry-Pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/vsingh2005/Fleet-Telemetry-Pipeline/actions/workflows/ci.yml)
-![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)
-![Code Style: Ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)
-![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)
+A streaming data pipeline for ingesting IoT sensor data, calculating rolling stats for anomaly detection, and saving records to partitioned Parquet files for fast querying in DuckDB.
 
-Distributed edge IoT telemetry ingestion, streaming anomaly detection, and Parquet analytical sink.
+## What it does
 
-## Architecture & Overview
+- **Buffered Ingestion**: Uses a circular ring buffer to handle bursts of incoming sensor packets without spiking memory.
+- **Rolling Anomaly Detection**: Calculates dynamic z-scores over sliding windows using Welford's algorithm to catch outliers in real time.
+- **Parquet Storage**: Batches records into compressed Parquet files partitioned by timestamp or device.
+- **Fast SQL Queries**: Uses embedded DuckDB to run analytical SQL queries directly over the stored Parquet files.
 
-```
-[ Edge Sensor Nodes ] ────► [ Ingestion Broker ] ────► [ Sliding Window Anomaly Engine ]
- (CAN-Bus / MQTT / BLE)        (Async Ring Buffer)          (Z-Score / IQR / Quantiles)
-                                                                       │
-                                                                       ▼
-                                                          [ Columnar Storage & Analytics ]
-                                                             (DuckDB / Apache Parquet)
-```
+## Stack
 
-## Features
-
-- **Asynchronous Ingestion**: Lock-free circular ring buffer handling high-frequency multi-channel sensor events.
-- **Real-Time Anomaly Detection**: Streaming sliding-window Z-score (Welford's algorithm), rolling median absolute deviation (MAD), and threshold violation filters.
-- **Columnar Analytics**: Direct export to partition-aware Parquet files with zero-copy DuckDB SQL queries.
-- **Resilience**: Exponential backoff reconnection policies and local disk cache fallback for disconnected edge nodes.
-
-## Tech Stack
-
-Python 3.11+, DuckDB, PyArrow, Apache Parquet, Pydantic, Pytest
+Python, DuckDB, PyArrow, Pytest
