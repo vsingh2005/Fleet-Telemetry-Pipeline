@@ -1,6 +1,3 @@
-"""
-Unit tests for CircularBuffer.
-"""
 from fleet_telemetry.buffer import CircularBuffer
 
 def test_circular_buffer_capacity_eviction():

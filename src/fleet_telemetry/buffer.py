@@ -1,16 +1,10 @@
-"""
-Circular Ring Buffer for high-throughput sensor telemetry ingestion.
-"""
-from typing import List, Optional, Generic, TypeVar
 from collections import deque
 import threading
+from typing import Generic, List, TypeVar
 
 T = TypeVar('T')
 
 class CircularBuffer(Generic[T]):
-    """
-    Thread-safe circular ring buffer with fixed capacity and FIFO eviction.
-    """
     def __init__(self, capacity: int = 10000):
         if capacity <= 0:
             raise ValueError("Capacity must be strictly positive")
@@ -19,12 +13,10 @@ class CircularBuffer(Generic[T]):
         self._lock = threading.Lock()
 
     def push(self, item: T) -> None:
-        """Append an item, evicting the oldest element if full."""
         with self._lock:
             self._buffer.append(item)
 
     def pop_all(self) -> List[T]:
-        """Drains and returns all current items in FIFO order."""
         with self._lock:
             items = list(self._buffer)
             self._buffer.clear()
