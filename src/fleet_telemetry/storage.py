@@ -26,4 +26,9 @@ class ParquetStorageSink:
         pattern = str(self.base_dir / "**" / "*.parquet").replace("\\", "/")
         con = duckdb.connect(database=":memory:")
         con.execute(f"CREATE VIEW telemetry_view AS SELECT * FROM read_parquet('{pattern}')")
-        return con.execute(sql_query).arrow().read_all().to_pylist()
+        try:
+            result = con.execute(sql_query)
+            columns = [column[0] for column in result.description]
+            return [dict(zip(columns, row)) for row in result.fetchall()]
+        finally:
+            con.close()
